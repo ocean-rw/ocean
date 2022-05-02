@@ -44,11 +44,13 @@ func (l *Local) Put(_ context.Context, data io.ReadCloser) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer f.Close()
 
 	_, err = io.Copy(f, data)
 	if err != nil {
 		return "", err
 	}
+	defer data.Close()
 
 	err = os.Rename(filename+".tmp", filename)
 	if err != nil {
@@ -63,6 +65,7 @@ func (l *Local) Get(_ context.Context, fd string) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 	return f, nil
 }
 

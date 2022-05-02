@@ -48,7 +48,7 @@ func main() {
 	}
 	s3Mgr.RegisterRouter(r)
 
-	logger.Infof("gateway service is running at %s", cfg.BindAddr)
+	logger.Infof("ocean-api is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {
 		logger.Errorf("server closed, err: %s", err)
 	}
