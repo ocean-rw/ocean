@@ -10,16 +10,16 @@ import (
 type Config struct {
 }
 
-type Service struct {
+type Mgr struct {
 	cfg     *Config
 	logger  *zap.SugaredLogger
 	storage storage.Storage
 }
 
-func New(logger *zap.SugaredLogger, cfg *Config) (*Service, error) {
-	return &Service{logger: logger, cfg: cfg}, nil
+func New(logger *zap.SugaredLogger, cfg *Config) (*Mgr, error) {
+	return &Mgr{logger: logger, cfg: cfg}, nil
 }
 
-func (s *Service) RegisterRouter(r *chi.Mux) {
+func (m *Mgr) RegisterRouter(r *chi.Mux) {
 
 }
