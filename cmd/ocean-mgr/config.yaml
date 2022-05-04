@@ -1,0 +1,11 @@
+bind_addr: 127.0.0.1:7100
+log:
+  level: debug
+db:
+  mongo:
+    uri: mongodb://127.0.0.1:27017
+    db_name: ocean
+    config_table: config
+    id_table: id
+    disk_table: disk
+    stripe_table: stripe
