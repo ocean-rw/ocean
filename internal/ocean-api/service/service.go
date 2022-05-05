@@ -1,4 +1,4 @@
-package user
+package service
 
 import (
 	"github.com/go-chi/chi/v5"
@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	Storage *storage.Config
 }
 
 type Mgr struct {
@@ -17,7 +18,11 @@ type Mgr struct {
 }
 
 func New(logger *zap.SugaredLogger, cfg *Config) (*Mgr, error) {
-	return &Mgr{logger: logger, cfg: cfg}, nil
+	stg, err := storage.New(cfg.Storage)
+	if err != nil {
+		return nil, err
+	}
+	return &Mgr{logger: logger, cfg: cfg, storage: stg}, nil
 }
 
 func (m *Mgr) RegisterRouter(r *chi.Mux) {

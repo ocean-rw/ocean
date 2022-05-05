@@ -9,15 +9,13 @@ import (
 
 	"github.com/ocean-rw/ocean/internal/lib/config"
 	"github.com/ocean-rw/ocean/internal/lib/log"
-	"github.com/ocean-rw/ocean/internal/ocean-api/s3"
-	"github.com/ocean-rw/ocean/internal/ocean-api/user"
+	"github.com/ocean-rw/ocean/internal/ocean-api/service"
 )
 
 type Config struct {
-	BindAddr string       `yaml:"bind_addr"`
-	Log      *log.Config  `yaml:"log"`
-	User     *user.Config `yaml:"user"`
-	S3       *s3.Config   `yaml:"s3"`
+	BindAddr string          `yaml:"bind_addr"`
+	Log      *log.Config     `yaml:"log"`
+	API      *service.Config `yaml:"api"`
 }
 
 func main() {
@@ -36,17 +34,11 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(log.Middleware(logger))
 
-	userMgr, err := user.New(logger, cfg.User)
-	if err != nil {
-		logger.Fatalf("failed to new user service, err: %s", err)
-	}
-	userMgr.RegisterRouter(r)
-
-	s3Mgr, err := s3.New(logger, cfg.S3)
+	s, err := service.New(logger, cfg.API)
 	if err != nil {
 		logger.Fatalf("failed to new s3 service, err: %s", err)
 	}
-	s3Mgr.RegisterRouter(r)
+	s.RegisterRouter(r)
 
 	logger.Infof("ocean-api is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {

@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 
+	"github.com/ocean-rw/ocean/pkg/api/mgr"
 	"github.com/ocean-rw/ocean/pkg/proto"
 )
 
@@ -26,7 +27,7 @@ type IDTableIF interface {
 type DiskTableIF interface {
 	Insert(ctx context.Context, disk *proto.Disk) error
 	Get(ctx context.Context, diskID uint32) (*proto.Disk, error)
-	List(ctx context.Context, args *proto.ListDisksArgs) ([]*proto.Disk, error)
+	List(ctx context.Context, args *mgr.ListDisksArgs) ([]*proto.Disk, error)
 }
 
 type StripeTableIF interface {

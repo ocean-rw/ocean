@@ -2,12 +2,13 @@ package fs
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	json "github.com/json-iterator/go"
 
 	"github.com/ocean-rw/ocean/internal/ocean-osd/disk/common"
 	"github.com/ocean-rw/ocean/pkg/proto"

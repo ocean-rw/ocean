@@ -1,14 +1,14 @@
-package mgr
+package service
 
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	json "github.com/json-iterator/go"
 	"go.uber.org/zap"
 
 	"github.com/ocean-rw/ocean/internal/ocean-osd/disk"
@@ -22,14 +22,14 @@ type Config struct {
 	Disk    *disk.Config `yaml:"disk"`
 }
 
-type Mgr struct {
+type Service struct {
 	cfg    *Config
 	logger *zap.SugaredLogger
 
 	disks map[uint32]common.DiskIF
 }
 
-func New(cfg *Config, logger *zap.SugaredLogger) (*Mgr, error) {
+func New(cfg *Config, logger *zap.SugaredLogger) (*Service, error) {
 	disks, err := disk.Open(cfg.Disk)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func New(cfg *Config, logger *zap.SugaredLogger) (*Mgr, error) {
 		return nil, err
 	}
 
-	return &Mgr{cfg: cfg, logger: logger, disks: disksMap}, nil
+	return &Service{cfg: cfg, logger: logger, disks: disksMap}, nil
 }
 
 func registerNewDisks(host, mgrHost string, disks []common.DiskIF) error {
@@ -180,8 +180,8 @@ func registerDisks(host string, disks []*proto.Disk) ([]*proto.Disk, error) {
 	return ret, nil
 }
 
-func (m *Mgr) RegisterRouters(r *chi.Mux) {
-	r.Get("/{disk_id}/{fd}", m.Get)
-	r.Put("/{disk_id}/{fd}", m.Put)
-	r.Delete("/{disk_id}/{fd}", m.Delete)
+func (s *Service) RegisterRouters(r *chi.Mux) {
+	r.Get("/get", s.Get)
+	r.Post("/put", s.Put)
+	r.Post("/delete", s.Delete)
 }

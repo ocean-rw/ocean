@@ -1,4 +1,4 @@
-package mgr
+package service
 
 import (
 	"context"
@@ -12,20 +12,20 @@ import (
 type Config struct {
 }
 
-type Mgr struct {
+type Service struct {
 	cfg       *Config
 	logger    *zap.SugaredLogger
 	db        *common.Database
 	clusterID string
 }
 
-func New(cfg *Config, logger *zap.SugaredLogger, db *common.Database) (*Mgr, error) {
+func New(cfg *Config, logger *zap.SugaredLogger, db *common.Database) (*Service, error) {
 	clusterID, err := db.ConfigTable.ClusterID(context.TODO())
 	if err != nil {
 		return nil, err
 	}
 
-	return &Mgr{
+	return &Service{
 		cfg:       cfg,
 		logger:    logger,
 		db:        db,
@@ -33,11 +33,11 @@ func New(cfg *Config, logger *zap.SugaredLogger, db *common.Database) (*Mgr, err
 	}, nil
 }
 
-func (m *Mgr) RegisterRouter(r *chi.Mux) {
-	r.Post("/allocstripes", m.AllocStripes)
+func (s *Service) RegisterRouter(r *chi.Mux) {
+	r.Post("/allocstripes", s.AllocStripes)
 
-	r.Post("/allocdisklabel", m.AllocDiskLabel)
-	r.Post("/registerdisks", m.RegisterDisks)
-	r.Get("/disks", m.ListDisks)
-	r.Get("/disk/{disk_id}", m.GetDisk)
+	r.Post("/allocdisklabel", s.AllocDiskLabel)
+	r.Post("/registerdisks", s.RegisterDisks)
+	r.Get("/disks", s.ListDisks)
+	r.Get("/disk/{disk_id}", s.GetDisk)
 }

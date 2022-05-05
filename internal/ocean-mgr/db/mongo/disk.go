@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/ocean-rw/ocean/internal/ocean-mgr/db/common"
+	"github.com/ocean-rw/ocean/pkg/api/mgr"
 	"github.com/ocean-rw/ocean/pkg/proto"
 )
 
@@ -36,7 +37,7 @@ func (t *DiskTable) Get(ctx context.Context, diskID uint32) (*proto.Disk, error)
 	return disk, err
 }
 
-func (t *DiskTable) List(ctx context.Context, args *proto.ListDisksArgs) ([]*proto.Disk, error) {
+func (t *DiskTable) List(ctx context.Context, args *mgr.ListDisksArgs) ([]*proto.Disk, error) {
 	filter := bson.M{}
 	if args != nil {
 		if args.Host != "" {

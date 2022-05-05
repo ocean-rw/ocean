@@ -11,14 +11,14 @@ import (
 	"github.com/ocean-rw/ocean/internal/lib/config"
 	"github.com/ocean-rw/ocean/internal/lib/log"
 	"github.com/ocean-rw/ocean/internal/ocean-mgr/db"
-	"github.com/ocean-rw/ocean/internal/ocean-mgr/mgr"
+	"github.com/ocean-rw/ocean/internal/ocean-mgr/service"
 )
 
 type Config struct {
-	BindAddr string      `yaml:"bind_addr"`
-	Log      *log.Config `yaml:"log"`
-	DB       *db.Config  `yaml:"db"`
-	Mgr      *mgr.Config `yaml:"mgr"`
+	BindAddr string          `yaml:"bind_addr"`
+	Log      *log.Config     `yaml:"log"`
+	DB       *db.Config      `yaml:"db"`
+	Mgr      *service.Config `yaml:"mgr"`
 }
 
 func main() {
@@ -43,11 +43,11 @@ func main() {
 	}
 	defer database.CloseFn(context.TODO())
 
-	m, err := mgr.New(cfg.Mgr, logger, database)
+	s, err := service.New(cfg.Mgr, logger, database)
 	if err != nil {
 		logger.Fatalf("failed to new disk mgr, err: %s", err)
 	}
-	m.RegisterRouter(r)
+	s.RegisterRouter(r)
 
 	logger.Infof("ocean-mgr is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {

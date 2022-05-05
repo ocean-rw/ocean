@@ -1,8 +1,9 @@
 package httputil
 
 import (
-	"encoding/json"
 	"net/http"
+
+	json "github.com/json-iterator/go"
 )
 
 func ReplyErr(w http.ResponseWriter, code int, err error) {

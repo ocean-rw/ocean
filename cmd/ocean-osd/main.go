@@ -9,13 +9,13 @@ import (
 
 	"github.com/ocean-rw/ocean/internal/lib/config"
 	"github.com/ocean-rw/ocean/internal/lib/log"
-	osd "github.com/ocean-rw/ocean/internal/ocean-osd/mgr"
+	"github.com/ocean-rw/ocean/internal/ocean-osd/service"
 )
 
 type Config struct {
-	BindAddr string      `yaml:"bind_addr"`
-	Log      *log.Config `yaml:"log"`
-	OSD      *osd.Config `yaml:"osd"`
+	BindAddr string          `yaml:"bind_addr"`
+	Log      *log.Config     `yaml:"log"`
+	OSD      *service.Config `yaml:"osd"`
 }
 
 func main() {
@@ -34,11 +34,11 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(log.Middleware(logger))
 
-	m, err := osd.New(cfg.OSD, logger)
+	s, err := service.New(cfg.OSD, logger)
 	if err != nil {
 		logger.Fatalf("failed to new disk mgr, err: %s", err)
 	}
-	m.RegisterRouters(r)
+	s.RegisterRouters(r)
 
 	logger.Infof("ocean-osd is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {
