@@ -1,23 +1,30 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 
 	"github.com/ocean-rw/ocean/internal/lib/config"
 	"github.com/ocean-rw/ocean/internal/lib/log"
-	"github.com/ocean-rw/ocean/internal/ocean-api/s3"
-	"github.com/ocean-rw/ocean/internal/ocean-api/user"
+	"github.com/ocean-rw/ocean/internal/master/db"
+	"github.com/ocean-rw/ocean/internal/master/service"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 type Config struct {
-	BindAddr string       `yaml:"bind_addr"`
-	Log      *log.Config  `yaml:"log"`
-	User     *user.Config `yaml:"user"`
-	S3       *s3.Config   `yaml:"s3"`
+	BindAddr string          `yaml:"bind_addr"`
+	Log      *log.Config     `yaml:"log"`
+	DB       *db.Config      `yaml:"db"`
+	Master   *service.Config `yaml:"master"`
 }
 
 func main() {
@@ -36,19 +43,19 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(log.Middleware(logger))
 
-	userMgr, err := user.New(logger, cfg.User)
+	database, err := db.Open(cfg.DB)
 	if err != nil {
-		logger.Fatalf("failed to new user service, err: %s", err)
+		logger.Fatalf("failed to connect database, err: %s", err)
 	}
-	userMgr.RegisterRouter(r)
+	defer database.CloseFn(context.TODO())
 
-	s3Mgr, err := s3.New(logger, cfg.S3)
+	s, err := service.New(cfg.Master, logger, database)
 	if err != nil {
-		logger.Fatalf("failed to new s3 service, err: %s", err)
+		logger.Fatalf("failed to new service, err: %s", err)
 	}
-	s3Mgr.RegisterRouter(r)
+	s.RegisterRouter(r)
 
-	logger.Infof("ocean-api is running at %s", cfg.BindAddr)
+	logger.Infof("ocean-master is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {
 		logger.Errorf("server closed, err: %s", err)
 	}

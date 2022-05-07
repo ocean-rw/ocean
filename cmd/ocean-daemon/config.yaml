@@ -1,0 +1,11 @@
+bind_addr: 127.0.0.1:7200
+log:
+  level: debug
+daemon:
+  my_host: 127.0.0.1:7200
+  master:
+    host: 127.0.0.1:7100
+    timeout_ms: 1000
+  disk:
+    fs:
+      dir: /tmp/ocean/disks/
