@@ -1,9 +1,0 @@
-bind_addr: 127.0.0.1:7200
-log:
-  level: debug
-osd:
-  host: 127.0.0.1:7200
-  mgr_host: 127.0.0.1:7100
-  disk:
-    fs:
-      dir: /tmp/ocean

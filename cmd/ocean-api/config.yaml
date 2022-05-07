@@ -1,6 +1,0 @@
-bind_addr: 127.0.0.1:7000
-log:
-  level: debug
-api:
-  storage:
-    local_path: /tmp/ocean
