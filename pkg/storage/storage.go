@@ -7,7 +7,7 @@ import (
 )
 
 type Storage interface {
-	Put(ctx context.Context, data io.ReadCloser) (string, error)
+	Put(ctx context.Context, data io.Reader) (string, int64, error)
 	Get(ctx context.Context, fd string) (io.ReadCloser, error)
 	Delete(ctx context.Context, fd string) error
 }

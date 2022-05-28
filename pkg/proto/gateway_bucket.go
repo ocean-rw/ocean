@@ -5,12 +5,11 @@ import (
 )
 
 type BucketInfo struct {
-	BID    uint64       // 桶 ID
-	UID    uint64       // 归属用户 ID
-	Name   string       // 桶名称
-	CTime  time.Time    // 创建时间
-	DTime  time.Time    // 删除时间
-	Status BucketStatus // 桶状态
+	BID     string       `bson:"_id"`      // 桶 ID
+	UID     uint64       `bson:"uid"`      // 归属用户 ID
+	PutTime time.Time    `bson:"put_time"` // 创建时间
+	DelTime time.Time    `bson:"del_time"` // 删除时间
+	Status  BucketStatus `bson:"status"`   // 桶状态
 }
 
 type BucketStatus uint8
