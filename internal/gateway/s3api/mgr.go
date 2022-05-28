@@ -44,6 +44,6 @@ func (m *Mgr) RegisterRouter(r *chi.Mux) {
 
 		r.Put("/{object_id:.+}", m.PutObject)
 		r.Get("/{object_id:.+}", m.GetObject)
-		r.Get("/{object_id:.+}", m.GetObject)
+		r.Delete("/{object_id:.+}", m.DeleteObject)
 	})
 }

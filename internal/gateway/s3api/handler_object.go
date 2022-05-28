@@ -49,10 +49,18 @@ func (m *Mgr) PutObject(w http.ResponseWriter, r *http.Request) {
 		FD:       fd,
 	}
 
-	err = m.db.FileTable.Upsert(ctx, fileInfo)
+	oldFileInfo, err := m.db.FileTable.Upsert(ctx, fileInfo)
 	if err != nil {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
+	}
+
+	if oldFileInfo != nil {
+		err = m.storage.Delete(ctx, oldFileInfo.FD)
+		if err != nil {
+			httputil.ReplyErr(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	w.Header().Set("ETag", fileInfo.Hash)
@@ -80,6 +88,26 @@ func (m *Mgr) GetObject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("ETag", fileInfo.Hash)
 	w.Header().Set(httputil.ContentLength, strconv.FormatInt(fileInfo.Size, 10))
 	httputil.ReplyBinary(w, http.StatusOK, data)
+}
+
+func (m *Mgr) DeleteObject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	bucketID := chi.URLParam(r, "bucket_id")
+	objectID := chi.URLParam(r, "object_id")
+
+	fileInfo, err := m.db.FileTable.Delete(ctx, bucketID, objectID)
+	if err != nil {
+		httputil.ReplyErr(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = m.storage.Delete(ctx, fileInfo.FD)
+	if err != nil {
+		httputil.ReplyErr(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	httputil.ReplyEmpty(w, http.StatusOK)
 }
 
 func (m Mgr) ListObjects(w http.ResponseWriter, r *http.Request) {

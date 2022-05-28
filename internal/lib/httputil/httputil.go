@@ -16,6 +16,13 @@ func ReplyErr(w http.ResponseWriter, code int, err error) {
 	http.Error(w, http.StatusText(code), code)
 }
 
+func ReplyEmpty(w http.ResponseWriter, code int) {
+	if code != 0 {
+		code = http.StatusOK
+	}
+	w.WriteHeader(code)
+}
+
 func ReplyBinary(w http.ResponseWriter, code int, data io.Reader) error {
 	if code != 0 {
 		code = http.StatusOK

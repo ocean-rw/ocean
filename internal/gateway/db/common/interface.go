@@ -25,7 +25,8 @@ type BucketTableIF interface {
 }
 
 type FileTableIF interface {
-	Upsert(ctx context.Context, fileInfo *proto.FileInfo) error
+	Upsert(ctx context.Context, fileInfo *proto.FileInfo) (*proto.FileInfo, error)
 	Get(ctx context.Context, bid string, fid string) (*proto.FileInfo, error)
+	Delete(ctx context.Context, bid string, fid string) (*proto.FileInfo, error)
 	List(ctx context.Context, bid string) ([]*proto.FileInfo, error)
 }

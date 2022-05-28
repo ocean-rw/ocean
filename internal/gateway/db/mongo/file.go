@@ -22,20 +22,34 @@ func openFileTable(tbl *mongo.Collection) (*fileTable, error) {
 	return &fileTable{tbl: tbl}, nil
 }
 
-func (t *fileTable) Upsert(ctx context.Context, fileInfo *proto.FileInfo) error {
+func (t *fileTable) Upsert(ctx context.Context, fileInfo *proto.FileInfo) (*proto.FileInfo, error) {
 	fileInfo.PutTime = time.Now()
 	filter := bson.M{"_id": fileInfo.FID, "bid": fileInfo.BID}
-	_, err := t.tbl.ReplaceOne(ctx, filter, fileInfo, options.Replace().SetUpsert(true))
+	ret := new(proto.FileInfo)
+	err := t.tbl.FindOneAndReplace(ctx, filter, fileInfo, options.FindOneAndReplace().SetUpsert(true)).Decode(ret)
 	if err != nil {
-		return err
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
 	}
-	return nil
+	return ret, nil
 }
 
 func (t *fileTable) Get(ctx context.Context, bid string, fid string) (*proto.FileInfo, error) {
 	filter := bson.M{"_id": fid, "bid": bid}
 	ret := new(proto.FileInfo)
 	err := t.tbl.FindOne(ctx, filter).Decode(&ret)
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
+}
+
+func (t *fileTable) Delete(ctx context.Context, bid string, fid string) (*proto.FileInfo, error) {
+	filter := bson.M{"_id": fid, "bid": bid}
+	ret := new(proto.FileInfo)
+	err := t.tbl.FindOneAndDelete(ctx, filter).Decode(&ret)
 	if err != nil {
 		return nil, err
 	}
