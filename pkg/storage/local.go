@@ -37,35 +37,33 @@ func NewLocal(path string) (Storage, error) {
 	return &Local{fid: fid, path: path}, nil
 }
 
-func (l *Local) Put(_ context.Context, data io.ReadCloser) (string, error) {
+func (l *Local) Put(_ context.Context, data io.Reader) (string, int64, error) {
 	fd := strconv.FormatUint(l.FID(), 10)
 	filename := fmt.Sprintf("%s/%s", l.path, fd)
 	f, err := os.OpenFile(filename+".tmp", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, data)
+	n, err := io.Copy(f, data)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
-	defer data.Close()
 
 	err = os.Rename(filename+".tmp", filename)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
-	return fd, nil
+	return fd, n, nil
 }
 
 func (l *Local) Get(_ context.Context, fd string) (io.ReadCloser, error) {
-	filename := fmt.Sprintf("%s/%s", l.path, fd)
+	filename := fmt.Sprintf("%s%s", l.path, fd)
 	f, err := os.OpenFile(filename, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 	return f, nil
 }
 
@@ -76,7 +74,7 @@ func (l *Local) Delete(_ context.Context, fd string) error {
 
 func (l *Local) FID() uint64 {
 	l.Lock()
-	l.Unlock()
+	defer l.Unlock()
 	l.fid++
 	return l.fid
 }

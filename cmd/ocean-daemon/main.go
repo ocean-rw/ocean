@@ -29,7 +29,7 @@ func main() {
 	}
 
 	logger := log.New(cfg.Log)
-	defer logger.Sync()
+	defer func() { _ = logger.Sync() }()
 
 	r := chi.NewRouter()
 	r.Use(log.Middleware(logger))

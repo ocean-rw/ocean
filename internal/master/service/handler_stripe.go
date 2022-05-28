@@ -17,7 +17,7 @@ func (s *Service) AllocStripes(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = httputil.ReplyData(w, http.StatusOK, stripes)
+	err = httputil.ReplyJSON(w, http.StatusOK, stripes)
 	if err != nil {
 		s.logger.Errorf("failed to reply data, err: %s", err)
 	}

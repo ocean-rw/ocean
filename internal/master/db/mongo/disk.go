@@ -56,6 +56,9 @@ func (t *DiskTable) List(ctx context.Context, args *master.ListDisksArgs) ([]*pr
 	}
 	disks := make([]*proto.Disk, 0)
 	err = cursor.All(ctx, &disks)
+	if err != nil {
+		return nil, err
+	}
 	return disks, nil
 }
 

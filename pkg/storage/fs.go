@@ -13,8 +13,8 @@ func NewFS() (Storage, error) {
 	return &FS{}, nil
 }
 
-func (f *FS) Put(ctx context.Context, data io.ReadCloser) (string, error) {
-	return "", nil
+func (f *FS) Put(ctx context.Context, data io.Reader) (string, int64, error) {
+	return "", 0, nil
 }
 
 func (f *FS) Get(ctx context.Context, fd string) (io.ReadCloser, error) {

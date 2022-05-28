@@ -1,21 +1,25 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 
-	"github.com/ocean-rw/ocean/internal/gateway/service"
+	"github.com/ocean-rw/ocean/internal/gateway/db"
+	"github.com/ocean-rw/ocean/internal/gateway/s3api"
+	"github.com/ocean-rw/ocean/internal/gateway/user"
 	"github.com/ocean-rw/ocean/internal/lib/config"
 	"github.com/ocean-rw/ocean/internal/lib/log"
 )
 
 type Config struct {
-	BindAddr string          `yaml:"bind_addr"`
-	Log      *log.Config     `yaml:"log"`
-	Gateway  *service.Config `yaml:"gateway"`
+	BindAddr string        `yaml:"bind_addr"`
+	Log      *log.Config   `yaml:"log"`
+	DB       *db.Config    `yaml:"db"`
+	Gateway  *s3api.Config `yaml:"gateway"`
 }
 
 func main() {
@@ -29,16 +33,29 @@ func main() {
 	}
 
 	logger := log.New(cfg.Log)
-	defer logger.Sync()
+	defer func() { _ = logger.Sync() }()
 
 	r := chi.NewRouter()
-	r.Use(log.Middleware(logger))
 
-	s, err := service.New(logger, cfg.Gateway)
+	database, err := db.Open(cfg.DB)
+	if err != nil {
+		logger.Fatalf("failed to connect database, err: %s", err)
+	}
+	defer func() { _ = database.CloseFn(context.TODO()) }()
+
+	userMgr, err := user.New(database.UserTable)
 	if err != nil {
 		logger.Fatalf("failed to new api service, err: %s", err)
 	}
-	s.RegisterRouter(r)
+
+	s3Mgr, err := s3api.New(cfg.Gateway, logger, database)
+	if err != nil {
+		logger.Fatalf("failed to new api service, err: %s", err)
+	}
+
+	r.Use(log.Middleware(logger), userMgr.Auth())
+	userMgr.RegisterRouter(r)
+	s3Mgr.RegisterRouter(r)
 
 	logger.Infof("ocean-gateway is running at %s", cfg.BindAddr)
 	if err = http.ListenAndServe(cfg.BindAddr, r); err != nil {

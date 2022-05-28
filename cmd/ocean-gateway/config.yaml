@@ -1,6 +1,13 @@
 bind_addr: 127.0.0.1:7000
 log:
   level: debug
+db:
+  mongo:
+    uri: mongodb://127.0.0.1:27017
+    db_name: ocean
+    user_table: user
+    bucket_table: bucket
+    file_table: file
 gateway:
   storage:
     local_path: /tmp/ocean/local/

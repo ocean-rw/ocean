@@ -19,7 +19,7 @@ func (s *Service) AllocDiskLabel(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = httputil.ReplyData(w, 0, &proto.DiskLabel{ClusterID: s.clusterID, DiskID: diskID})
+	err = httputil.ReplyJSON(w, 0, &proto.DiskLabel{ClusterID: s.clusterID, DiskID: diskID})
 	if err != nil {
 		s.logger.Errorf("failed to reply data, err: %s", err)
 	}
@@ -46,7 +46,6 @@ func (s *Service) RegisterDisks(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			s.logger.Errorf("failed to insert disk to database, err: %s", err)
 			failedDisks = append(failedDisks, disk)
-			err = nil
 			continue
 		}
 	}
@@ -60,7 +59,7 @@ func (s *Service) RegisterDisks(w http.ResponseWriter, r *http.Request) {
 	case len(failedDisks) == len(disks):
 		code = http.StatusBadRequest
 	}
-	err = httputil.ReplyData(w, code, failedDisks)
+	err = httputil.ReplyJSON(w, code, failedDisks)
 	if err != nil {
 		s.logger.Errorf("failed to reply data, err: %s", err)
 	}
@@ -84,7 +83,7 @@ func (s *Service) ListDisks(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = httputil.ReplyData(w, http.StatusOK, disks)
+	err = httputil.ReplyJSON(w, http.StatusOK, disks)
 	if err != nil {
 		s.logger.Errorf("failed to reply data, err: %s", err)
 	}
@@ -105,7 +104,7 @@ func (s *Service) GetDisk(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	err = httputil.ReplyData(w, http.StatusOK, disks)
+	err = httputil.ReplyJSON(w, http.StatusOK, disks)
 	if err != nil {
 		s.logger.Errorf("failed to reply data, err: %s", err)
 	}
