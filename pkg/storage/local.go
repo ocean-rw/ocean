@@ -74,7 +74,7 @@ func (l *Local) Delete(_ context.Context, fd string) error {
 
 func (l *Local) FID() uint64 {
 	l.Lock()
-	l.Unlock()
+	defer l.Unlock()
 	l.fid++
 	return l.fid
 }

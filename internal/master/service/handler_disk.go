@@ -46,7 +46,6 @@ func (s *Service) RegisterDisks(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			s.logger.Errorf("failed to insert disk to database, err: %s", err)
 			failedDisks = append(failedDisks, disk)
-			err = nil
 			continue
 		}
 	}

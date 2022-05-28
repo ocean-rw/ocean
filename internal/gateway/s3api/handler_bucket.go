@@ -17,7 +17,7 @@ func (m *Mgr) ListBuckets(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	httputil.ReplyXML(w, http.StatusOK, generateListBucketsResponse(buckets))
+	_ = httputil.ReplyXML(w, http.StatusOK, generateListBucketsResponse(buckets))
 }
 
 // generates ListBucketsResponse from array of BucketInfo which can be
@@ -67,5 +67,5 @@ func (m *Mgr) DeleteBucket(w http.ResponseWriter, r *http.Request) {
 		httputil.ReplyErr(w, http.StatusInternalServerError, err)
 		return
 	}
-	httputil.ReplyXML(w, http.StatusOK, nil)
+	_ = httputil.ReplyXML(w, http.StatusOK, nil)
 }

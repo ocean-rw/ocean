@@ -64,7 +64,7 @@ func (m *Mgr) PutObject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("ETag", fileInfo.Hash)
-	httputil.ReplyXML(w, http.StatusOK, nil)
+	_ = httputil.ReplyXML(w, http.StatusOK, nil)
 }
 
 func (m *Mgr) GetObject(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +87,7 @@ func (m *Mgr) GetObject(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("ETag", fileInfo.Hash)
 	w.Header().Set(httputil.ContentLength, strconv.FormatInt(fileInfo.Size, 10))
-	httputil.ReplyBinary(w, http.StatusOK, data)
+	_ = httputil.ReplyBinary(w, http.StatusOK, data)
 }
 
 func (m *Mgr) DeleteObject(w http.ResponseWriter, r *http.Request) {
@@ -122,7 +122,7 @@ func (m Mgr) ListObjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := generateListObjectsV2Response(bucketID, "", "", "", "", "", "", false, 0, files, nil)
-	httputil.ReplyXML(w, http.StatusOK, data)
+	_ = httputil.ReplyXML(w, http.StatusOK, data)
 }
 
 // generates an ListObjectsV2 response for the said bucket with other enumerated options.

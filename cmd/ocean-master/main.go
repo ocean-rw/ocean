@@ -38,7 +38,7 @@ func main() {
 	}
 
 	logger := log.New(cfg.Log)
-	defer logger.Sync()
+	defer func() { _ = logger.Sync() }()
 
 	r := chi.NewRouter()
 	r.Use(log.Middleware(logger))
@@ -47,7 +47,7 @@ func main() {
 	if err != nil {
 		logger.Fatalf("failed to connect database, err: %s", err)
 	}
-	defer database.CloseFn(context.TODO())
+	defer func() { _ = database.CloseFn(context.TODO()) }()
 
 	s, err := service.New(cfg.Master, logger, database)
 	if err != nil {
