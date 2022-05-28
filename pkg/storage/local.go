@@ -59,7 +59,7 @@ func (l *Local) Put(_ context.Context, data io.Reader) (string, int64, error) {
 }
 
 func (l *Local) Get(_ context.Context, fd string) (io.ReadCloser, error) {
-	filename := fmt.Sprintf("%s/%s", l.path, fd)
+	filename := fmt.Sprintf("%s%s", l.path, fd)
 	f, err := os.OpenFile(filename, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, err
