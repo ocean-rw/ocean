@@ -7,11 +7,11 @@ require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/google/uuid v1.3.0
 	github.com/json-iterator/go v1.1.12
-	github.com/minio/minio v0.0.0-20220528092119-5e3010d4557f
+	github.com/minio/minio v0.0.0-20220528165353-c2630bb3a33b
 	github.com/momaek/easybind v0.1.3
 	go.mongodb.org/mongo-driver v1.9.1
 	go.uber.org/zap v1.21.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -224,5 +224,6 @@ require (
 	gopkg.in/h2non/filetype.v1 v1.0.5 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	maze.io/x/duration v0.0.0-20160924141736-faac084b6075 // indirect
 )
